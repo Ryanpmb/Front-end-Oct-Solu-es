@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "../api"
 import { AxiosPromise } from "axios"
 
@@ -39,15 +39,23 @@ const LogoData = () =>{
     return response
 }
 
-const UpdateUserInformations = async  ({ addresses, LogoClubImage} : {addresses: string[], LogoClubImage: string | null }) => {
-    const response = await api.patch("/updateUserInformations",{
-        Adress: addresses,
-        Logo: LogoClubImage,
-        id: userId
-    })
+const UpdateUserInformations = async  ({ addresses, LogoClubImage} : {addresses: {}[], LogoClubImage: string | null }) => {
+    try {
+        const response = await api.patch("/updateUserInformations",{
+            Adress: addresses,
+            Logo: LogoClubImage,
+            id: userId
+        })
+        return response
+    } catch (error) {
+        throw error;
+    }
 }
+
+
 
 export {
     useUserData,
-    LogoData
+    LogoData,
+    UpdateUserInformations
 }
