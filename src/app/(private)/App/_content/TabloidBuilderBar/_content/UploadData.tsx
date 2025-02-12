@@ -2,36 +2,30 @@
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog"
-import { LogoData, useUserData } from "@/services/User/User"
+import { LogoData, UpdateUserInformations, useUserData } from "@/services/User/User"
 import { DialogTitle } from "@radix-ui/react-dialog"
 import axios from "axios"
-import { Form, Formik } from "formik"
+import { Field, Form, Formik } from "formik"
 import { useRef, useState } from "react"
 import CropperLogo from "./_components/CropperLogo"
 import { ReactCropperElement } from "react-cropper"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { UserInterface } from "@/app/Interfaces/UserInterface"
 
 export default function UploadData() {
 
     const { data: user } = useUserData()
     const { data: logoClub } = LogoData()
+    const queryClient = useQueryClient()
 
-    const [contentAdress, setContentAdress] = useState(0);
+    
     const informations = user ? JSON.parse(user.Adress) : []
+    const [contentAdress, setContentAdress] = useState(informations?.length ?? 0);
 
     const [isLoadingLogoImage, setIsLoadingLogoImage] = useState<boolean>(false)
     const [logoClubImageWithoutBackground, setLogoClubImageWithoutBackground] = useState<string | null>(null)
-    const [logoClubCroppedImage, setLogoClubCropperImage] = useState<Base64URLString | null>(null)
+    const [logoClubCroppedImage, setLogoClubCropperImage] = useState<string | null>(null)
     const cropperRef = useRef<ReactCropperElement | null>(null)
-
-    const adressGroup: Record<string, string> = Array.from({ length: contentAdress }).reduce(
-        (acc: Record<string, string>, _, index) => ({
-            ...acc,
-            [`Adress-${index}`]: informations[index]?.Adress ?? "",
-            [`Telefone-${index}`]: informations[index]?.Telefone ?? "",
-            [`Whatsapp-${index}`]: informations[index]?.Whatsapp ?? "",
-            [`horaFuncionamento-${index}`]: informations[index]?.horaFuncionamento ?? ""
-        }), {}
-    )
 
     const removeBackGroundImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -66,7 +60,25 @@ export default function UploadData() {
 
     }
 
-    const handleSaveAdressInformations = (values: any) => {
+    const { mutateAsync: updateUserInformationsFn } = useMutation({
+        mutationFn: UpdateUserInformations,
+        onSuccess(_, variables) {
+            const cached = queryClient.getQueryData(['user'])
+
+            queryClient.setQueryData(["user"], (data : UserInterface) =>{
+                return{
+                    ...data, 
+                    Adress: variables.addresses
+                }
+            })
+
+            console.log(user)
+        }
+
+    })
+
+
+    const handleSaveAdressInformations = async (values: any) => {
 
         const addresses = [];
 
@@ -78,9 +90,14 @@ export default function UploadData() {
                 horaFuncionamento: values[`horaFuncionamento-${i}`]
             })
         }
+
+        await updateUserInformationsFn({
+            addresses: JSON.stringify(addresses),
+            LogoClubImage: logoClubCroppedImage,
+        })
     }
 
-    
+
 
     return (
 
@@ -88,23 +105,31 @@ export default function UploadData() {
             <Dialog>
                 <DialogTrigger asChild>
 
-                    <Button className="rounded-3xl hover:bg-red-700 w-[80%]">
+                    <Button className="rounded-xl hover:bg-red-700 w-[80%]">
                         Carregue aqui os dados principais da sua loja
                     </Button>
 
                 </DialogTrigger>
 
-                <DialogContent>
+                <DialogContent className="w-[50%]">
 
                     <DialogHeader>
-                        <DialogTitle className="text-gray-500 text-4xl">
+                        <DialogTitle className="text-gray-500 text-5xl font-viga">
                             Campos não Obrigatórios
                         </DialogTitle>
                     </DialogHeader>
 
                     <Formik
                         initialValues={{
-                            adressGroup
+                            ...Array.from({ length: contentAdress }).reduce(
+                                (acc: Record<string, string>, _, index) => ({
+                                    ...acc,
+                                    [`Adress-${index}`]: informations[index]?.Adress ?? "",
+                                    [`Telefone-${index}`]: informations[index]?.Telefone ?? "",
+                                    [`Whatsapp-${index}`]: informations[index]?.Whatsapp ?? "",
+                                    [`horaFuncionamento-${index}`]: informations[index]?.horaFuncionamento ?? ""
+                                }), {}
+                            )
                         }}
 
                         onSubmit={handleSaveAdressInformations}
@@ -132,13 +157,59 @@ export default function UploadData() {
                                 )}
 
                                 {logoClub &&
-                                    <img src={logoClub} className="w-[150px] h-[150px]" alt="" />
+                                    <img src={logoClub} className="w-[150px] h-[120px]" alt="" />
                                 }
                             </div>
 
+
+                            {Array.from({ length: contentAdress }, (_, index) => (
+                                <div key={index} id={`adress-${index}`} className="flex items-center justify-start gap-[30px] w-full mt-5">
+                                    <div className="flex flex-col items-start justify-start w-[34%]">
+
+                                        <p>Endereço:</p>
+                                        <Field className=" p-[10px] rounded-xl bg-gray-300 focus:border focus:border-gray-500 w-full border border-gray-500 " name={`Adress-${index}`} type={"text"} placeholder={"Endereço de seu mercado"} />
+
+                                    </div>
+
+
+                                    <div className="flex flex-col items-start justify-start w-[10%]">
+
+                                        <p>Telefone:</p>
+                                        <Field className=" p-[10px] rounded-xl bg-gray-300 focus:border focus:border-gray-500 w-full border border-gray-500 " name={`Telefone-${index}`} type={"text"} placeholder={"Telefone de seu mercado"} />
+
+                                    </div>
+
+                                    <div className="flex flex-col items-start justify-start w-[10%]">
+
+                                        <p>Whatsapp:</p>
+                                        <Field className=" p-[10px] rounded-xl bg-gray-300 focus:border focus:border-gray-500 w-full border border-gray-500 " name={`Whatsapp-${index}`} type={"text"} placeholder={"Whatsapp de seu mercado"} />
+
+                                    </div>
+
+
+                                    <div className="flex flex-col items-start justify-start w-[34%]">
+
+                                        <p>Horário de funcionamento:</p>
+                                        <Field className=" p-[10px] rounded-xl bg-gray-300 focus:border focus:border-gray-500 w-full border border-gray-500 " name={`horaFuncionamento-${index}`} type={"text"} placeholder={"Horário de funcionamento de seu mercado"} />
+
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="flex w-full items-start justify-start mt-[10px]">
+                                <Button onClick={() =>{ setContentAdress((prevValue : number) => prevValue + 1) }} type="button">
+                                    + Endereções
+                                </Button>
+                            </div>
+
+                            <div className="w-full flex items-center justify-center mt-[10px]">
+                                <Button className="w-1/2">
+                                    Salvar
+                                </Button>
+                            </div>
                         </Form>
 
                     </Formik>
+
                 </DialogContent>
             </Dialog>
         </section>
