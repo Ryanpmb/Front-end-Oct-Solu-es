@@ -10,6 +10,7 @@ import { useRef, useState } from "react"
 import CropperLogo from "./_components/CropperLogo"
 import { ReactCropperElement } from "react-cropper"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { UserInterface } from "@/app/Interfaces/UserInterface"
 
 export default function UploadData() {
 
@@ -23,7 +24,7 @@ export default function UploadData() {
 
     const [isLoadingLogoImage, setIsLoadingLogoImage] = useState<boolean>(false)
     const [logoClubImageWithoutBackground, setLogoClubImageWithoutBackground] = useState<string | null>(null)
-    const [logoClubCroppedImage, setLogoClubCropperImage] = useState<Base64URLString | null>(null)
+    const [logoClubCroppedImage, setLogoClubCropperImage] = useState<string | null>(null)
     const cropperRef = useRef<ReactCropperElement | null>(null)
 
     const removeBackGroundImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,15 +62,21 @@ export default function UploadData() {
 
     const { mutateAsync: updateUserInformationsFn } = useMutation({
         mutationFn: UpdateUserInformations,
-        onSuccess(data, variables, context) {
+        onSuccess(_, variables) {
             const cached = queryClient.getQueryData(['user'])
+
+            queryClient.setQueryData(["user"], (data : UserInterface) =>{
+                return{
+                    ...data, 
+                    Adress: variables.addresses
+                }
+            })
 
             console.log(user)
         }
 
     })
 
-    console.log(logoClub)
 
     const handleSaveAdressInformations = async (values: any) => {
 
@@ -85,7 +92,7 @@ export default function UploadData() {
         }
 
         await updateUserInformationsFn({
-            addresses,
+            addresses: JSON.stringify(addresses),
             LogoClubImage: logoClubCroppedImage,
         })
     }

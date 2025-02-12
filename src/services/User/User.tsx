@@ -33,13 +33,14 @@ const LogoData = () =>{
     const response = useQuery({
         queryKey:["logo"],
         queryFn: getLogoClubImage,
+        staleTime: 1000,
         
     })
 
     return response
 }
 
-const UpdateUserInformations = async  ({ addresses, LogoClubImage} : {addresses: {}[], LogoClubImage: string | null }) => {
+const UpdateUserInformations = async  ({ addresses, LogoClubImage} : {addresses: string, LogoClubImage: string | null }) => {
     try {
         const response = await api.patch("/updateUserInformations",{
             Adress: addresses,
