@@ -1,6 +1,7 @@
 "use client"
 import { BackgroundProvider } from "@/components/Context Apis/BackgroundContext";
 import TabloidBuilderBar from "./_content/TabloidBuilderBar/TabloidBuilderBar";
+import { StageProvider } from "@/components/Context Apis/StageContext";
 
 // export const metadata: Metadata = {
 //     title: "Cartaz Prático - App",
@@ -10,9 +11,9 @@ import TabloidBuilderBar from "./_content/TabloidBuilderBar/TabloidBuilderBar";
 export default function App() {
     return (
         <>
-            <BackgroundProvider>
+            <StageProvider>
                 <TabloidBuilderBar />
-            </BackgroundProvider>
+            </StageProvider>
         </>
     )
 }

@@ -72,7 +72,6 @@ export default function UploadData() {
                 }
             })
 
-            console.log(user)
         }
 
     })
