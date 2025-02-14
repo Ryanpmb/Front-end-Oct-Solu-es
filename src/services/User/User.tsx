@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "../api"
-import { AxiosPromise } from "axios"
+
 
 const userId = localStorage.getItem("userId")
 

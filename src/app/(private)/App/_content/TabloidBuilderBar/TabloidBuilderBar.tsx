@@ -1,4 +1,6 @@
 import LayoutOptions from "./_content/LayoutOptions";
+import { ProductList } from "./_content/ProductList";
+import ProductOptions from "./_content/ProductOptions";
 import UploadData from "./_content/UploadData";
 
 
@@ -11,6 +13,9 @@ export default function TabloidBuilderBar() {
             <UploadData />
             <p>2º Passo</p>
             <LayoutOptions />
+            <p>3º Passo</p>
+            <ProductOptions/>
+            <ProductList/>
         </main>
     )
 }

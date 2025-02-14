@@ -2,7 +2,6 @@ import { useUserData } from "@/services/User/User"
 
 export default function Header() {
     const {data : user } = useUserData();
-    console.log(user);
     return(
         <header className="h-[10%] w-full flex shadow-black shadow-2xl bg-red-700 relative">
             <ul className="w-full flex flex-row items-center justify-between bg-red-700">
