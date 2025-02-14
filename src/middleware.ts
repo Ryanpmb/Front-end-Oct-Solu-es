@@ -9,7 +9,7 @@ const publicRoutes = [
     { path: "/", whenAutenticated: "next" },
 ] as const
 
-const REDIRECT_WHEN_NOT_AUTHENTICATED = "/login"
+const REDIRECT_WHEN_NOT_AUTHENTICATED = "/Login"
 
 export default function middlewate(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -38,19 +38,30 @@ export default function middlewate(request: NextRequest) {
     }
 
     if(authToken && !publicRoute){
-        const token = Cookies.get("access_token")
+        const token = request.cookies.get("access_token")
 
         const redirectUrl = request.nextUrl.clone()
 
         redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED;
 
         if(token){
-            const decode = jwtDecode(token)
-
+            const decode = jwtDecode(token.value)
             const currentTime = Math.floor(Date.now() / 1000)
 
+           
+
+
             if(decode.exp){
-                return decode.exp > currentTime ? NextResponse.next() : NextResponse.redirect(redirectUrl)
+
+                if(decode.exp > currentTime){
+                    return NextResponse.next()
+                }
+
+                
+               request.cookies.delete("access_token")
+        
+                return NextResponse.redirect(redirectUrl)
+                
             }
 
             return NextResponse.redirect(redirectUrl)

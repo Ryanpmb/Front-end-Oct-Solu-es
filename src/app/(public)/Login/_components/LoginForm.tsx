@@ -19,7 +19,6 @@ const LoginForm = () => {
             await UserLogin(userLogin)
             const token = Cookies.get("access_token")
             if (token) {
-                console.log("caindo aqui")
                 router.push("/DashBoard")
             }
 
