@@ -1,9 +1,10 @@
+import { ProductInterface } from "@/app/Interfaces/ProductInterface";
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 interface StageInterface{
     id: number;
     productsQuantity: number;
-    products: {}[];
+    products: ProductInterface[];
     shapes: {}[];
     texts: {}[];
     copies: {}[];

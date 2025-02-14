@@ -1,29 +1,96 @@
 import { ProductInterface } from "@/app/Interfaces/ProductInterface";
+import { StageContext } from "@/components/Context Apis/StageContext";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
-import React from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 
-export function SelectProductModal({ products }: { products: ProductInterface[] }) {
+export function SelectProductModal(
+    {
+        searchedProducts,
+        setSearchedProducts,
+        searchProductsWithNameAndEanFn,
+        setHasProductVisibilityInIndex,
+        index,
+        toggleModalVisibilyWhenClose,
+        setToggleModalVisibilyWhenClose
+    }: {
+        searchedProducts: ProductInterface[],
+        setSearchedProducts: Dispatch<SetStateAction<ProductInterface[] | []>> ,
+        searchProductsWithNameAndEanFn: (value: string, index: number) => void,
+        setHasProductVisibilityInIndex: Dispatch<SetStateAction<number | null>>,
+        index: number,
+        toggleModalVisibilyWhenClose: boolean,
+        setToggleModalVisibilyWhenClose: Dispatch<SetStateAction<boolean>>
+    }) {
+
+    
+
+    const [isLoadingProductsImages, setIsLoadingProductsImages] = useState<boolean>(true)
+    const { setStage,stages } = useContext(StageContext)
+
+    const addProductSelectedInStage = (product: ProductInterface) => {
+        setStage((prevStages) => {
+            return prevStages.map((stage) => {
+                if (stage.id === 1) {
+                    return {
+                        ...stage,
+                        products: [...stage.products, product],
+                    }
+                }
+                return stage;
+            });
+        });
+        setHasProductVisibilityInIndex(null);
+        setToggleModalVisibilyWhenClose(false);
+        setSearchedProducts([])
+    }
+
+    useEffect(()=>{
+        console.log(stages)
+    }, stages)
+
 
     return (
 
-        <Dialog defaultOpen >
+        <Dialog defaultOpen open={toggleModalVisibilyWhenClose} onOpenChange={() => { setToggleModalVisibilyWhenClose(false); setHasProductVisibilityInIndex(null) }}>
 
-            <DialogContent>
+            <DialogContent className="w-full h-50% flex-grow-1  overflow-auto max-h-[50%]">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl">
-                        Selecione um Produto!
+                    <DialogTitle className="text-2xl flex justify-around">
+                        Escolha um Produto!
+                        <Input
+                            className="w-[30%] border border-black"
+                            type="text"
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchProductsWithNameAndEanFn(e.target.value, index)}
+                            placeholder={`Pesquise por um produto`}
+                        />
                     </DialogTitle>
                 </DialogHeader>
 
+                <ul className="flex items-center justify-center flex-wrap gap-[10px]">
+                    {searchedProducts.map((product) => (
 
+                        <li onClick={() => addProductSelectedInStage(product)} className="flex items-center justify-center gap-[20px] flex-col w-[200px] h-[250px] cursor-pointer border border-black hover:bg-gray-100" key={product.id}>
+                            <div>
 
-                {products.map((product) => (
-                    <div className="" key={product.id}>
-                        {product.name}
-                    </div>
-                ))}
+                                {
+                                    isLoadingProductsImages &&
+                                    <div className="w-full h-full flex justify-center items-center">
+                                        <div className="w-10 h-10 border border-red rounded-full animate-spin"></div>
+                                    </div>
+                                }
+                                <img onLoad={() => setIsLoadingProductsImages(false)} className="w-[100px]" src={product.img} alt={`Image do produto ${product.name}`} />
 
+                            </div>
+                            <div>
+                                <h1>{product.name}</h1>
+                            </div>
+                        </li>
+
+                    ))}
+                </ul>
 
             </DialogContent>
 
