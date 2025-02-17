@@ -31,17 +31,36 @@ export function SelectProductModal(
     const { setStage,stages } = useContext(StageContext)
 
     const addProductSelectedInStage = (product: ProductInterface) => {
-        setStage((prevStages) => {
-            return prevStages.map((stage) => {
-                if (stage.id === 1) {
-                    return {
-                        ...stage,
-                        products: [...stage.products, product],
+        console.log(product)
+        const newProduct: ProductInterface = {
+            id: Date.now(),
+            name: product.name,
+            img: product.img,
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100,
+            price: 0.00,
+            KonvaImg: new window.Image(),
+        }
+
+        newProduct.KonvaImg.src = product.img
+        newProduct.KonvaImg.onload = () => {
+            setStage((prevStages) => {
+                return prevStages.map((stage) => {
+                    if (stage.id === 1) {
+                        return {
+                            ...stage,
+                            products: [...stage.products, newProduct],
+                        }
                     }
-                }
-                return stage;
+                    return stage;
+                });
             });
-        });
+        }
+
+
+
         setHasProductVisibilityInIndex(null);
         setToggleModalVisibilyWhenClose(false);
         setSearchedProducts([])

@@ -18,7 +18,7 @@ export function ActionsTools() {
         if (selectedItem) {
             const copy = {
                 ...selectedItem,
-                id: `${Date.now()}`,
+                id: Date.now(),
             }
 
             setStage((prevStages) => {
