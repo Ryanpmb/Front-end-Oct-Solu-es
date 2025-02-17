@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "../api"
+import { UserInterface } from "@/app/Interfaces/UserInterface"
 
 
 const userId = localStorage.getItem("userId")
@@ -15,7 +16,7 @@ const GetUser = async () => {
 }
 
 const useUserData = () => {
-    const response = useQuery({
+    const response = useQuery<UserInterface>({
         queryKey: ["user"],
         queryFn: GetUser,
         refetchOnWindowFocus: true,

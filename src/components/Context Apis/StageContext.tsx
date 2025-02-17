@@ -1,11 +1,12 @@
 import { ProductInterface } from "@/app/Interfaces/ProductInterface";
+import { KonvaNewShapeInterface } from "@/app/Interfaces/ShapeInterface";
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 interface StageInterface{
     id: number;
     productsQuantity: number;
     products: ProductInterface[];
-    shapes: {}[];
+    shapes: KonvaNewShapeInterface[];
     texts: {}[];
     copies: {}[];
     background: HTMLImageElement | null;
