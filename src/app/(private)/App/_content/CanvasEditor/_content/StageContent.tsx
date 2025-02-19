@@ -36,7 +36,16 @@ export function StageContent() {
 
     return (
         <main className="mt-[250px]">
-            <Stage width={600} height={800} className="border border-black">
+            <Stage
+                onMouseDown={(e: Konva.KonvaEventObject<MouseEvent>) => {
+                    if(e.target.getStage()){
+                        setSelectedItem(null)
+                    }
+                }}
+                width={650}
+                height={800}
+                className="border border-black"
+            >
                 <Layer>
                     {
                         currentStage?.products?.map((product) => (

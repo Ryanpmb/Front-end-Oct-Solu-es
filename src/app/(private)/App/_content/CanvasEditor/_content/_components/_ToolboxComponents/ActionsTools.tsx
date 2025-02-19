@@ -30,7 +30,6 @@ export function ActionsTools() {
                             copies: [...stage.copies, copy]
                         }
                     }
-
                     return stage
                 })
             })
@@ -43,6 +42,21 @@ export function ActionsTools() {
     const addShadowInItem = () => {
         if (selectedItem) {
             const itemType = (selectedItem as { type: string }).type
+
+            const shapeTypes = ["rectangle", "circle", "stamp", "rightArrow"];
+            const copyTypes = [
+                "copyProductImage", "copyRectangle", "copyCircle",
+                "copyStamp", "copyRightArrow", "copyText"
+            ];
+
+            const shadowConfig = {
+                shadowColor: 'black',
+                shadowOpacity: 1,
+                shadowBlur: 10,
+                shadowOffsetX: 1,
+                shadowOffsetY: 1,
+            }
+
             const itemTypes = {
                 productImage: () => {
                     setStage((prevStages) => {
@@ -54,11 +68,7 @@ export function ActionsTools() {
                                         if (product.id = parseInt(selectedItem.id)) {
                                             return {
                                                 ...product,
-                                                shadowColor: 'black',
-                                                shadowOpacity: 0.5,
-                                                shadowBlur: 5,
-                                                shadowOffsetX: 0,
-                                                shadowOffsetY: 0,
+                                                ...shadowConfig
                                             }
                                         }
                                         return product
@@ -80,14 +90,9 @@ export function ActionsTools() {
                                         if (shape.id === selectedItem.id) {
                                             return {
                                                 ...shape,
-                                                shadowColor: 'black',
-                                                shadowOpacity: 1,
-                                                shadowBlur: 10,
-                                                shadowOffsetX: 1,
-                                                shadowOffsetY: 1,
+                                                ...shadowConfig
                                             }
                                         }
-
                                         return shape
                                     })
                                 }
@@ -107,11 +112,7 @@ export function ActionsTools() {
                                         if (text.id === selectedItem.id) {
                                             return {
                                                 ...text,
-                                                shadowColor: 'black',
-                                                shadowOpacity: 1,
-                                                shadowBlur: 10,
-                                                shadowOffsetX: 1,
-                                                shadowOffsetY: 1,
+                                                ...shadowConfig
                                             }
                                         }
 
@@ -134,11 +135,7 @@ export function ActionsTools() {
                                         if (copy.id === selectedItem.id) {
                                             return {
                                                 ...copy,
-                                                shadowColor: 'black',
-                                                shadowOpacity: 1,
-                                                shadowBlur: 10,
-                                                shadowOffsetX: 1,
-                                                shadowOffsetY: 1,
+                                                ...shadowConfig
                                             }
                                         }
 
@@ -153,8 +150,12 @@ export function ActionsTools() {
                 }
             }
 
-            if (itemType === "rectangle" || itemType === "circle" || itemType === "stamp" || itemType === "rightArrow") {
+            if (shapeTypes.includes(itemType)) {
                 const itemTypeFunction = itemTypes["shapes"];
+                return itemTypeFunction();
+            }
+            if (copyTypes.includes(itemType)){
+                const itemTypeFunction = itemTypes["copy"];
                 return itemTypeFunction();
             }
 

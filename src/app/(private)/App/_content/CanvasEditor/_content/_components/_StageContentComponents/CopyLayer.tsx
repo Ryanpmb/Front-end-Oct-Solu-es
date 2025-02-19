@@ -21,7 +21,7 @@ export function CopyLayer({
     return (
         <>
             {
-                ('image' in copy && copy.type === "productImage") && (
+                ('image' in copy && copy.type === "productImage" ||'image' in copy && copy.type ===  "copyProductImage") && (
                     <>
                         <Image
                             draggable
@@ -29,7 +29,7 @@ export function CopyLayer({
                             onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                             onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                             image={copy.image}
-                            type="copy"
+                            type="copyProductImage"
                             x={copy.x}
                             y={copy.y}
                             width={copy.width}
@@ -40,39 +40,39 @@ export function CopyLayer({
             }
 
             {
-                ("type" in copy && copy.type === 'rectangle') && (
+                ("type" in copy && copy.type === 'rectangle' || "type" in copy && copy.type === 'copyRectangle') && (
                     <Rect
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         {...copy}
-                        type="copy"
+                        type="copyRectangle"
                         x={copy.x ? copy.x + 20 : 0}
                     />
                 )
             }
 
             {
-                ("type" in copy && copy.type === 'circle') && (
+                ("type" in copy && copy.type === 'circle' || "type" in copy && copy.type === 'copyCircle' ) && (
                     <Circle
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         {...copy}
-                        type="copy"
+                        type="copyCircle"
                         x={copy.x ? copy.x + 20 : 0}
                     />
                 )
             }
 
             {
-                ("type" in copy && copy.type === 'stamp') && (
+                ("type" in copy && copy.type === 'stamp' || "type" in copy && copy.type === 'copyStamp') && (
                     <Star
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         {...copy}
-                        type="copy"
+                        type="copyStamp"
                         x={copy.x ? copy.x + 20 : 0}
                         numPoints={copy.numPoints ? copy.numPoints : 15}
                         innerRadius={copy.innerRadius ? copy.innerRadius : 45}
@@ -82,26 +82,26 @@ export function CopyLayer({
             }
 
             {
-                ("type" in copy && copy.type === 'rightArrow') && (
+                ("type" in copy && copy.type === 'rightArrow' || "type" in copy && copy.type === 'copyRightArrow') && (
                     <Path
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         {...copy}
-                        type="copy"
+                        type="copyRightArrow"
                         x={copy.x ? copy.x + 20 : 0}
                     />
                 )
             }
 
             {
-                ("type" in copy && copy.type === 'text') && (
+                ("type" in copy && copy.type === 'text' || "type" in copy && copy.type === 'copyText') && (
                     <Text
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         {...copy}
-                        type="copy"
+                        type="copyText"
                         x={copy.x ? copy.x + 20 : 0}
                     />
                 )
