@@ -2,18 +2,18 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "re
 import Konva from 'konva';
 
 interface SelectedItemContextType {
-    selectedItem: Konva.Node | Konva.Node[] | null,
-    setSelectedItem: Dispatch<SetStateAction<Konva.Node | Konva.Node[] | null>>;
+    selectedItem: Konva.NodeConfig | Konva.NodeConfig[] | null,
+    setSelectedItem: Dispatch<SetStateAction<Konva.NodeConfig | Konva.NodeConfig[] | null>>;
 }
 
 export const SelectedItemContext = createContext<SelectedItemContextType>({
     selectedItem: null,
-    setSelectedItem: () => { },
+    setSelectedItem: () => {},
 });
 
 
 export function SelectedItemProvider({ children }: { children: ReactNode }) {
-    const [selectedItem, setSelectedItem] = useState<Konva.Node | Konva.Node[] | null>(null)
+    const [selectedItem, setSelectedItem] = useState<Konva.NodeConfig | Konva.NodeConfig[] | null>(null)
     return (
         <SelectedItemContext.Provider value={{ selectedItem, setSelectedItem }}>
             {children}

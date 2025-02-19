@@ -24,7 +24,7 @@ export function ShapeTools() {
     ] as const
 
     useEffect(() => {
-        if (selectedItem) {
+        if (selectedItem?.type === "rectangle"){
             return setIsVisivleRectRoundingModal(true);
         }
         return setIsVisivleRectRoundingModal(false)

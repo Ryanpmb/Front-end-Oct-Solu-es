@@ -2,8 +2,10 @@ import { ProductInterface } from "@/app/Interfaces/ProductInterface";
 import { KonvaNewShapeInterface } from "@/app/Interfaces/ShapeInterface";
 import { KonvaNewTextInterface } from "@/app/Interfaces/TextInterface";
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
+import Konva from 'konva';
 
-type CopyType = ProductInterface | KonvaNewShapeInterface | KonvaNewTextInterface;
+
+export type CopyType = ProductInterface | KonvaNewShapeInterface | KonvaNewTextInterface;
 
 interface StageInterface{
     id: number;
@@ -11,7 +13,7 @@ interface StageInterface{
     products: ProductInterface[];
     shapes: KonvaNewShapeInterface[];
     texts: KonvaNewTextInterface[];
-    copies:CopyType[];
+    copies:Konva.NodeConfig[];
     background: HTMLImageElement | null;
 }
 

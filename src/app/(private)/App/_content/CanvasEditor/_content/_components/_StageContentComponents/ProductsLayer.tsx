@@ -4,15 +4,22 @@ import Konva from 'konva';
 
 export function ProductsLayer({
     product,
-    selectItemFn
+    selectItemFn,
+    grabCursorWhenOnTopOfAnItemFn,
+    normalCursorWhenLeavingTheTopAnItemFn
 }: {
     product: ProductInterface,
     selectItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
+    grabCursorWhenOnTopOfAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
+    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
 }) {
     return (
         <>
             <Image
-                key={product.id}
+                onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
+                onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
+                type="productImage"
+                id={String(product.id)}
                 x={product.x}
                 y={product.y}
                 width={product.width}
@@ -20,8 +27,16 @@ export function ProductsLayer({
                 image={product.KonvaImg}
                 draggable
                 onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
+                shadowColor={product.shadowColor}
+                shadowOpacity={product.shadowOpacity}
+                shadowBlur={product.shadowBlur}
+                shadowOffsetX={product.shadowOffsetX}
+                shadowOffsetY={product.shadowOffsetY}
             />
             <Text
+                onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
+                onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
+                type="productName"
                 text={product?.name}
                 fontFamily="Microsoft"
                 fontSize={16}
@@ -31,6 +46,9 @@ export function ProductsLayer({
                 onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
             />
             <Text
+                onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
+                onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
+                type="productPrice"
                 text={String(product.price)}
                 fontFamily="Microsoft"
                 fontSize={16}

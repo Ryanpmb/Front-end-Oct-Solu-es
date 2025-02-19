@@ -6,6 +6,7 @@ import { useUserData } from "@/services/User/User";
 import { CalendarIcon, Copy, Images, MapPin, RotateCcw, RotateCw } from "lucide-react";
 import { useContext, useState } from "react";
 import { DateRange } from "react-day-picker";
+import Konva from 'konva';
 
 export function ActionsTools() {
     const { selectedItem } = useContext(SelectedItemContext)
@@ -16,9 +17,9 @@ export function ActionsTools() {
 
     const duplicateItem = () => {
         if (selectedItem) {
-            const copy = {
+            const copy: Konva.NodeConfig = {
                 ...selectedItem,
-                id: Date.now(),
+                id: `${Date.now()}`,
             }
 
             setStage((prevStages) => {
@@ -33,15 +34,137 @@ export function ActionsTools() {
                     return stage
                 })
             })
+
         }
 
 
     }
 
+    const addShadowInItem = () => {
+        if (selectedItem) {
+            const itemType = (selectedItem as { type: string }).type
+            const itemTypes = {
+                productImage: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    products: stage.products.map((product) => {
+                                        if (product.id = parseInt(selectedItem.id)) {
+                                            return {
+                                                ...product,
+                                                shadowColor: 'black',
+                                                shadowOpacity: 0.5,
+                                                shadowBlur: 5,
+                                                shadowOffsetX: 0,
+                                                shadowOffsetY: 0,
+                                            }
+                                        }
+                                        return product
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                shapes: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    shapes: stage.shapes.map((shape) => {
+                                        if (shape.id === selectedItem.id) {
+                                            return {
+                                                ...shape,
+                                                shadowColor: 'black',
+                                                shadowOpacity: 1,
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 1,
+                                                shadowOffsetY: 1,
+                                            }
+                                        }
+
+                                        return shape
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                text: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    texts: stage.texts.map((text) => {
+                                        if (text.id === selectedItem.id) {
+                                            return {
+                                                ...text,
+                                                shadowColor: 'black',
+                                                shadowOpacity: 1,
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 1,
+                                                shadowOffsetY: 1,
+                                            }
+                                        }
+
+                                        return text
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                copy: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    copies: stage.copies.map((copy) => {
+                                        if (copy.id === selectedItem.id) {
+                                            return {
+                                                ...copy,
+                                                shadowColor: 'black',
+                                                shadowOpacity: 1,
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 1,
+                                                shadowOffsetY: 1,
+                                            }
+                                        }
+
+                                        return copy
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                }
+            }
+
+            if (itemType === "rectangle" || itemType === "circle" || itemType === "stamp" || itemType === "rightArrow") {
+                const itemTypeFunction = itemTypes["shapes"];
+                return itemTypeFunction();
+            }
+
+            const itemTypeFunction = itemTypes[itemType as keyof typeof itemTypes];
+            return itemTypeFunction();
+        }
+    }
+
 
     //fazer função para voltar e prosseguir no histórico
-
-    //fazer função para adicionar sombra ao elemento
 
     return (
         <section className="flex flex-col items-center justify-center gap-[5px]">
@@ -51,6 +174,7 @@ export function ActionsTools() {
                     className="w-1 h-8 rounded-2xl"
                     title="Duplique Algum Elemento"
                     disabled={!selectedItem}
+                    onClick={() => duplicateItem()}
                 >
                     <Copy />
                 </Button>
@@ -80,6 +204,7 @@ export function ActionsTools() {
                     className="w-1 h-8 rounded-2xl"
                     title="Adicionar Sombra ao Elemento"
                     disabled={!selectedItem}
+                    onClick={() => addShadowInItem()}
                 >
                     <Images />
                 </Button>

@@ -15,4 +15,9 @@ export interface ProductInterface {
     secondPriceFontSize?: string | null;
     priceBoxtype?: string | null;
     ean?: string | null;
+    shadowColor?: string,
+    shadowOpacity?: number,
+    shadowBlur?: number,
+    shadowOffsetX?: number,
+    shadowOffsetY?: number,
 }
