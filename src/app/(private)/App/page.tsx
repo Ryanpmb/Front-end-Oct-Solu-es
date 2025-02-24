@@ -5,6 +5,7 @@ import { StageProvider } from "@/components/Context Apis/StageContext";
 
 import CanvasEditor from "./_content/CanvasEditor/CanvasEditor";
 import { SelectedItemProvider } from "@/components/Context Apis/SelectedItem";
+import { HistoryStageProvider } from "@/components/Context Apis/HistoryStage";
 
 
 // export const metadata: Metadata = {
@@ -17,8 +18,10 @@ export default function App() {
         <main className="flex w-full">
             <StageProvider>
                 <SelectedItemProvider>
-                    <TabloidBuilderBar />
-                    <CanvasEditor />
+                    <HistoryStageProvider>
+                        <TabloidBuilderBar />
+                        <CanvasEditor />
+                    </HistoryStageProvider>
                 </SelectedItemProvider>
             </StageProvider>
         </main>

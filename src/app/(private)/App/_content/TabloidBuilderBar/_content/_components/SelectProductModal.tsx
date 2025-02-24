@@ -1,4 +1,5 @@
 import { ProductInterface } from "@/app/Interfaces/ProductInterface";
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 import { StageContext } from "@/components/Context Apis/StageContext";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,7 @@ export function SelectProductModal(
         setToggleModalVisibilyWhenClose
     }: {
         searchedProducts: ProductInterface[],
-        setSearchedProducts: Dispatch<SetStateAction<ProductInterface[] | []>> ,
+        setSearchedProducts: Dispatch<SetStateAction<ProductInterface[] | []>>,
         searchProductsWithNameAndEanFn: (value: string, index: number) => void,
         setHasProductVisibilityInIndex: Dispatch<SetStateAction<number | null>>,
         index: number,
@@ -25,50 +26,55 @@ export function SelectProductModal(
         setToggleModalVisibilyWhenClose: Dispatch<SetStateAction<boolean>>
     }) {
 
-    
+
 
     const [isLoadingProductsImages, setIsLoadingProductsImages] = useState<boolean>(true)
-    const { setStage,stages } = useContext(StageContext)
+    const { setStage, stages } = useContext(StageContext)
+    const { saveToHistory } = useContext(HistoryStageContext)
+    const currentStage = stages.find(stage => stage.id === 1)
 
     const addProductSelectedInStage = (product: ProductInterface) => {
-        console.log(product)
-        const newProduct: ProductInterface = {
-            id: Date.now(),
-            name: product.name,
-            img: product.img,
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
-            price: 0.00,
-            KonvaImg: new window.Image(),
-        }
+        if (currentStage) {
+            const newProduct: ProductInterface = {
+                id: Date.now(),
+                name: product.name,
+                img: product.img,
+                x: 100,
+                y: 100,
+                width: 100,
+                height: 100,
+                price: 0.00,
+                KonvaImg: new window.Image(),
+            }
 
-        newProduct.KonvaImg.src = product.img
-        newProduct.KonvaImg.onload = () => {
-            setStage((prevStages) => {
-                return prevStages.map((stage) => {
-                    if (stage.id === 1) {
-                        return {
-                            ...stage,
-                            products: [...stage.products, newProduct],
+            newProduct.KonvaImg.src = product.img
+            newProduct.KonvaImg.onload = () => {
+                const updatedProductList = [...currentStage.products, newProduct]
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === currentStage?.id) {
+                            return {
+                                ...stage,
+                                products: updatedProductList,
+                            }
                         }
-                    }
-                    return stage;
+                        return stage;
+                    });
                 });
-            });
+
+                saveToHistory(updatedProductList, currentStage.shapes, currentStage.texts, currentStage.copies)
+            }
+
+
+
+
+
+
+            setHasProductVisibilityInIndex(null);
+            setToggleModalVisibilyWhenClose(false);
+            setSearchedProducts([])
         }
-
-
-
-        setHasProductVisibilityInIndex(null);
-        setToggleModalVisibilyWhenClose(false);
-        setSearchedProducts([])
     }
-
-    useEffect(()=>{
-        console.log(stages)
-    }, stages)
 
 
     return (

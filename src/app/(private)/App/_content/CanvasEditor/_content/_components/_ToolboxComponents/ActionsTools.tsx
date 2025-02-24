@@ -7,11 +7,14 @@ import { CalendarIcon, Copy, Images, MapPin, RotateCcw, RotateCw } from "lucide-
 import { useContext, useState } from "react";
 import { DateRange } from "react-day-picker";
 import Konva from 'konva';
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 
 export function ActionsTools() {
     const { selectedItem } = useContext(SelectedItemContext)
     const { data: user } = useUserData()
-    const { setStage } = useContext(StageContext)
+    const { setStage, stages } = useContext(StageContext)
+    const { saveToHistory } = useContext(HistoryStageContext)
+    const currentStage = stages.find(stage => stage.id === 1)
     const [isCalendarVisible, setIsCalendarVisible] = useState(false)
     const [validateDate, setValidateDate] = useState<DateRange | undefined>()
 
@@ -22,17 +25,23 @@ export function ActionsTools() {
                 id: `${Date.now()}`,
             }
 
-            setStage((prevStages) => {
-                return prevStages.map((stage) => {
-                    if (stage.id === 1) {
-                        return {
-                            ...stage,
-                            copies: [...stage.copies, copy]
+            if (currentStage) {
+
+                const updatedCopiesList = [...currentStage.copies, copy]
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return {
+                                ...stage,
+                                copies: updatedCopiesList
+                            }
                         }
-                    }
-                    return stage
+                        return stage
+                    })
                 })
-            })
+
+                saveToHistory(currentStage.products, currentStage.shapes, currentStage.texts, updatedCopiesList)
+            }
 
         }
 
@@ -154,7 +163,7 @@ export function ActionsTools() {
                 const itemTypeFunction = itemTypes["shapes"];
                 return itemTypeFunction();
             }
-            if (copyTypes.includes(itemType)){
+            if (copyTypes.includes(itemType)) {
                 const itemTypeFunction = itemTypes["copy"];
                 return itemTypeFunction();
             }

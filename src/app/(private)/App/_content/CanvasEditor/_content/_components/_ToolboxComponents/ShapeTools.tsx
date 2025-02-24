@@ -1,19 +1,22 @@
 import { KonvaNewShapeInterface, ShapeTypes, ShapeTypesInterface } from "@/app/Interfaces/ShapeInterface";
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 import { SelectedItemContext } from "@/components/Context Apis/SelectedItem";
 import { StageContext } from "@/components/Context Apis/StageContext";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
-import { ArrowRight, Circle, Hexagon, Square } from "lucide-react";
+import { ArrowRight, Circle, Hexagon, Shapes, Square } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 
 export function ShapeTools() {
     const [startColor, setStartColor] = useState("#ff0000");
     const [endColor, setEndColor] = useState("#ff0000");
     const svgRightArrowData = "M13.77 43.84l156.48 0 0 -32.25c0,-14.65 11.38,-13.91 19.22,-6.07l100.63 100.63c5.29,5.29 5.29,13.94 0,19.22l-100.63 100.63c-7.07,7.07 -19.22,8.99 -19.22,-5.37l0 -32.95 -156.48 0c-7.58,0 -13.77,-6.2 -13.77,-13.77l0 -116.3c0,-7.58 6.2,-13.77 13.77,-13.77z";
-    const { setStage } = useContext(StageContext);
+    const { setStage, stages } = useContext(StageContext);
+    const { saveToHistory } = useContext(HistoryStageContext);
     const { selectedItem } = useContext(SelectedItemContext);
     const [isVisivleRectRoundingModal, setIsVisivleRectRoundingModal] = useState(false);
+    const currentStage = stages.find((stage) => stage.id === 1)
 
     const optionsOfRectRoundedBorder = [
         { value: "2", label: '2' },
@@ -24,7 +27,7 @@ export function ShapeTools() {
     ] as const
 
     useEffect(() => {
-        if (selectedItem?.type === "rectangle"){
+        if (selectedItem?.type === "rectangle") {
             return setIsVisivleRectRoundingModal(true);
         }
         return setIsVisivleRectRoundingModal(false)
@@ -96,20 +99,25 @@ export function ShapeTools() {
 
         const newShape = shapeTypes[shapeType];
 
-        setStage((prevStages) => {
-            return prevStages.map((stage) => {
-                if (stage.id === 1) {
-                    return {
-                        ...stage,
-                        shapes: [...stage.shapes, newShape]
+        if (currentStage) {
+
+            const updatedShapesList = [...currentStage.shapes, newShape]
+
+            setStage((prevStages) => {
+                return prevStages.map((stage) => {
+                    if (stage.id === currentStage.id) {
+                        return {
+                            ...stage,
+                            shapes: updatedShapesList
+                        }
                     }
-                }
 
-                return stage
+                    return stage
+                })
             })
-        })
 
-
+            saveToHistory(currentStage.products, updatedShapesList, currentStage.texts, currentStage.copies)           
+        }
     }
 
     return (
