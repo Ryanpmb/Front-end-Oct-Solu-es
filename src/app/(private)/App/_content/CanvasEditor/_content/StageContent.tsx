@@ -8,7 +8,6 @@ import { ProductsLayer } from "./_components/_StageContentComponents/ProductsLay
 import { TextsLayer } from "./_components/_StageContentComponents/TextsLayer";
 import { CopyLayer } from "./_components/_StageContentComponents/CopyLayer";
 import { Transformer as KonvaTransformer } from "konva/lib/shapes/Transformer";
-import { set } from "date-fns";
 import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 
 export function StageContent() {
@@ -20,7 +19,7 @@ export function StageContent() {
     const stageRef = useRef<Konva.Stage>(null)
     const transformerRef = useRef<KonvaTransformer | null>(null)
 
-    const {saveToHistory} = useContext(HistoryStageContext)
+    const { saveToHistory } = useContext(HistoryStageContext)
 
     const selectItem = (e: Konva.KonvaEventObject<MouseEvent>) => {
         setSelectedItem(e.target.attrs)
@@ -67,8 +66,8 @@ export function StageContent() {
                         if (shape.id === selectedItemId) {
                             return {
                                 ...shape,
-                                scaleX: (selectedItem as { scaleX: number})?.scaleX,
-                                scaleY: (selectedItem as { scaleY: number})?.scaleY,
+                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
+                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
                             }
                         }
                         return shape
@@ -87,15 +86,15 @@ export function StageContent() {
                         })
                     })
 
-                    saveToHistory(currentStage.products, updatedShapeScale, currentStage.texts, currentStage.copies) 
+                    saveToHistory(currentStage.products, updatedShapeScale, currentStage.texts, currentStage.copies)
                 },
                 productsImage: () => {
                     const updatedProductScale = currentStage.products.map((product) => {
                         if (product.id === parseInt(selectedItemId)) {
                             return {
                                 ...product,
-                                imageScaleX: (selectedItem as { scaleX: number})?.scaleX,
-                                imageScaleY: (selectedItem as { scaleY: number})?.scaleY,
+                                imageScaleX: (selectedItem as { scaleX: number })?.scaleX,
+                                imageScaleY: (selectedItem as { scaleY: number })?.scaleY,
                             }
                         }
                         return product
@@ -103,7 +102,7 @@ export function StageContent() {
 
                     setStage((prevStages) => {
                         return prevStages.map((stage) => {
-                            if(stage.id === 1){
+                            if (stage.id === 1) {
                                 return {
                                     ...stage,
                                     products: updatedProductScale
@@ -115,7 +114,61 @@ export function StageContent() {
                     })
 
                     saveToHistory(updatedProductScale, currentStage.shapes, currentStage.texts, currentStage.copies)
-                }
+                },
+                copies: () => {
+                    const updatedCopiesScale = currentStage.copies.map((copy) => {
+                        if (copy.id === selectedItemId) {
+                            return {
+                                ...copy,
+                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
+                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
+                            }
+                        }
+                        return copy
+                    })
+
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    copies: updatedCopiesScale
+                                };
+                            }
+
+                            return stage;
+                        })
+                    })
+
+                    saveToHistory(currentStage.products, currentStage.shapes, currentStage.texts, updatedCopiesScale)
+                },
+                texts: () => {
+                    const updatedTextsScale = currentStage.texts.map((text) => {
+                        if (text.id === selectedItemId) {
+                            return {
+                                ...text,
+                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
+                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
+                            }
+                        }
+                        return text
+                    })
+
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    texts: updatedTextsScale
+                                };
+                            }
+
+                            return stage;
+                        })
+                    })
+
+                    saveToHistory(currentStage.products, currentStage.shapes, updatedTextsScale, currentStage.copies)
+                },
             }
 
             const transformEndFn = itemTypes[type as keyof typeof itemTypes]
@@ -135,15 +188,6 @@ export function StageContent() {
                 className="border border-black"
                 ref={stageRef}
             >
-                <Layer
-                    onClick={() => {
-                        setSelectedItem(null)
-                    }}
-                    width={650}
-                    height={800}
-                >
-
-                </Layer>
                 <Layer>
                     {
                         currentStage?.products?.map((product) => (
@@ -199,6 +243,7 @@ export function StageContent() {
                                 selectItemFn={selectItem}
                                 grabCursorWhenOnTopOfAnItemFn={grabCursorWhenOnTopOfAnItem}
                                 normalCursorWhenLeavingTheTopAnItemFn={normalCursorWhenLeavingTheTopAnItem}
+                                transformEndToSaveToHistoryFn={transformEndToSaveToHistory}
                             />
                         ))
                     }
@@ -213,6 +258,7 @@ export function StageContent() {
                                 selectItemFn={selectItem}
                                 grabCursorWhenOnTopOfAnItemFn={grabCursorWhenOnTopOfAnItem}
                                 normalCursorWhenLeavingTheTopAnItemFn={normalCursorWhenLeavingTheTopAnItem}
+                                transformEndToSaveToHistoryFn={transformEndToSaveToHistory}
                             />
                         ))
                     }
