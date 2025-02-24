@@ -6,12 +6,14 @@ export function ProductsLayer({
     product,
     selectItemFn,
     grabCursorWhenOnTopOfAnItemFn,
-    normalCursorWhenLeavingTheTopAnItemFn
+    normalCursorWhenLeavingTheTopAnItemFn,
+    transformEndToSaveToHistoryFn,
 }: {
     product: ProductInterface,
     selectItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
     grabCursorWhenOnTopOfAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
-    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
+    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
+    transformEndToSaveToHistoryFn: (type: string) => void,
 }) {
     return (
         <>
@@ -32,6 +34,9 @@ export function ProductsLayer({
                 shadowBlur={product.shadowBlur}
                 shadowOffsetX={product.shadowOffsetX}
                 shadowOffsetY={product.shadowOffsetY}
+                scaleX={product.imageScaleX | 1}
+                scaleY={product.imageScaleY | 1}
+                onTransformEnd={() => transformEndToSaveToHistoryFn("productsImage")}
             />
             <Text
                 onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}

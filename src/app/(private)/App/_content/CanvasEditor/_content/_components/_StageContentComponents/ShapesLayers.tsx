@@ -6,12 +6,14 @@ export function ShapesLayers({
     shape,
     selectItemFn,
     grabCursorWhenOnTopOfAnItemFn,
-    normalCursorWhenLeavingTheTopAnItemFn
+    normalCursorWhenLeavingTheTopAnItemFn,
+    transformEndToSaveToHistoryFn,
 }: {
     shape: KonvaNewShapeInterface,
     selectItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
     grabCursorWhenOnTopOfAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
-    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
+    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
+    transformEndToSaveToHistoryFn: (type: string) => void,
 
 }) {
     return (
@@ -22,8 +24,9 @@ export function ShapesLayers({
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         {...shape}
-                        draggable
-                        onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
+                        draggable={true}
+                        onClick={(e: Konva.KonvaEventObject<MouseEvent>) =>  selectItemFn(e) }
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("shapes") }
                     />
                 )
             }
@@ -36,6 +39,7 @@ export function ShapesLayers({
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         {...shape}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("shapes") }
                     />
                 )
             }
@@ -51,6 +55,7 @@ export function ShapesLayers({
                         numPoints={shape.numPoints ? shape.numPoints : 15}
                         innerRadius={shape.innerRadius ? shape.innerRadius : 45}
                         outerRadius={shape.outerRadius ? shape.outerRadius : 50}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("shapes") }
                     />
                 )
             }
@@ -64,6 +69,7 @@ export function ShapesLayers({
                         onMouseLeave={(e: Konva.KonvaEventObject<MouseEvent>) => normalCursorWhenLeavingTheTopAnItemFn(e)}
                         {...shape}
                         data={shape.data}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("shapes") }
                     />
                 )
             }

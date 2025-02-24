@@ -1,21 +1,29 @@
 import { StageContext } from "@/components/Context Apis/StageContext"
 import { Layer, Rect, Circle, Stage, Text, Transformer, Line, Image, Star, Path, Group } from "react-konva";
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 import Konva from 'konva';
 import { SelectedItemContext } from "@/components/Context Apis/SelectedItem";
 import { ShapesLayers } from "./_components/_StageContentComponents/ShapesLayers";
 import { ProductsLayer } from "./_components/_StageContentComponents/ProductsLayer";
 import { TextsLayer } from "./_components/_StageContentComponents/TextsLayer";
 import { CopyLayer } from "./_components/_StageContentComponents/CopyLayer";
+import { Transformer as KonvaTransformer } from "konva/lib/shapes/Transformer";
+import { set } from "date-fns";
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 
 export function StageContent() {
-    const { stages } = useContext(StageContext)
+    const { setStage, stages } = useContext(StageContext)
     const currentStage = stages.find((stage) => stage.id === 1)
+
     const { setSelectedItem, selectedItem } = useContext(SelectedItemContext)
+
+    const stageRef = useRef<Konva.Stage>(null)
+    const transformerRef = useRef<KonvaTransformer | null>(null)
+
+    const {saveToHistory} = useContext(HistoryStageContext)
 
     const selectItem = (e: Konva.KonvaEventObject<MouseEvent>) => {
         setSelectedItem(e.target.attrs)
-        console.log(selectedItem)
     }
 
     const grabCursorWhenOnTopOfAnItem = (e: Konva.KonvaEventObject<MouseEvent>) => {
@@ -32,20 +40,110 @@ export function StageContent() {
         }
     }
 
+    useEffect(() => {
+        setTimeout(() => {
+            if (transformerRef.current && selectedItem) {
+                const selectedItemId = (selectedItem as { id: string }).id
+                const itemInNodeType = stageRef.current?.findOne(`#${selectedItemId}`)
+                if (itemInNodeType) {
+                    transformerRef.current.nodes([itemInNodeType])
+                    transformerRef.current.getLayer()?.batchDraw()
+                } else {
+                    transformerRef.current.nodes([])
+                    transformerRef.current.getLayer()?.batchDraw()
+                }
+
+            }
+        }, 1) //esse timeout só foi adicionado para o transformerRef não ser null para cair dentro do if
+    }, [selectedItem])
+
+    const transformEndToSaveToHistory = (type: string) => {
+        if (currentStage) {
+            const selectedItemId = (selectedItem as { id: string }).id
+            const itemTypes = {
+                shapes: () => {
+
+                    const updatedShapeScale = currentStage.shapes.map((shape) => {
+                        if (shape.id === selectedItemId) {
+                            return {
+                                ...shape,
+                                scaleX: (selectedItem as { scaleX: number})?.scaleX,
+                                scaleY: (selectedItem as { scaleY: number})?.scaleY,
+                            }
+                        }
+                        return shape
+                    })
+
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    shapes: updatedShapeScale
+                                }
+                            }
+
+                            return stage;
+                        })
+                    })
+
+                    saveToHistory(currentStage.products, updatedShapeScale, currentStage.texts, currentStage.copies) 
+                },
+                productsImage: () => {
+                    const updatedProductScale = currentStage.products.map((product) => {
+                        if (product.id === parseInt(selectedItemId)) {
+                            return {
+                                ...product,
+                                imageScaleX: (selectedItem as { scaleX: number})?.scaleX,
+                                imageScaleY: (selectedItem as { scaleY: number})?.scaleY,
+                            }
+                        }
+                        return product
+                    })
+
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if(stage.id === 1){
+                                return {
+                                    ...stage,
+                                    products: updatedProductScale
+                                };
+                            }
+
+                            return stage;
+                        })
+                    })
+
+                    saveToHistory(updatedProductScale, currentStage.shapes, currentStage.texts, currentStage.copies)
+                }
+            }
+
+            const transformEndFn = itemTypes[type as keyof typeof itemTypes]
+            if (transformEndFn) {
+                transformEndFn()
+            }
+
+        }
+    }
 
 
     return (
         <main className="mt-[250px]">
             <Stage
-                onMouseDown={(e: Konva.KonvaEventObject<MouseEvent>) => {
-                    if(e.target.getStage()){
-                        setSelectedItem(null)
-                    }
-                }}
                 width={650}
                 height={800}
                 className="border border-black"
+                ref={stageRef}
             >
+                <Layer
+                    onClick={() => {
+                        setSelectedItem(null)
+                    }}
+                    width={650}
+                    height={800}
+                >
+
+                </Layer>
                 <Layer>
                     {
                         currentStage?.products?.map((product) => (
@@ -55,7 +153,7 @@ export function StageContent() {
                                 selectItemFn={selectItem}
                                 grabCursorWhenOnTopOfAnItemFn={grabCursorWhenOnTopOfAnItem}
                                 normalCursorWhenLeavingTheTopAnItemFn={normalCursorWhenLeavingTheTopAnItem}
-
+                                transformEndToSaveToHistoryFn={transformEndToSaveToHistory}
                             />
                         ))
                     }
@@ -69,9 +167,27 @@ export function StageContent() {
                                 selectItemFn={selectItem}
                                 grabCursorWhenOnTopOfAnItemFn={grabCursorWhenOnTopOfAnItem}
                                 normalCursorWhenLeavingTheTopAnItemFn={normalCursorWhenLeavingTheTopAnItem}
+                                transformEndToSaveToHistoryFn={transformEndToSaveToHistory}
                             />
                         ))
                     }
+
+                    {
+                        selectedItem && (
+                            <Transformer
+                                ref={transformerRef}
+                                boundBoxFunc={(oldBox, newBox) => {
+                                    if (newBox.width < 20 || newBox.width < 20) {
+                                        return oldBox;
+                                    }
+
+                                    return newBox;
+                                }}
+
+                            />
+                        )
+                    }
+
                 </Layer>
 
                 <Layer>
@@ -101,6 +217,7 @@ export function StageContent() {
                         ))
                     }
                 </Layer>
+
             </Stage>
         </main>
     )
