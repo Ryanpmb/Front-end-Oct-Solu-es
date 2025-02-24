@@ -6,42 +6,175 @@ import { useUserData } from "@/services/User/User";
 import { CalendarIcon, Copy, Images, MapPin, RotateCcw, RotateCw } from "lucide-react";
 import { useContext, useState } from "react";
 import { DateRange } from "react-day-picker";
+import Konva from 'konva';
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 
 export function ActionsTools() {
     const { selectedItem } = useContext(SelectedItemContext)
     const { data: user } = useUserData()
-    const { setStage } = useContext(StageContext)
+    const { setStage, stages } = useContext(StageContext)
+    const { saveToHistory } = useContext(HistoryStageContext)
+    const currentStage = stages.find(stage => stage.id === 1)
     const [isCalendarVisible, setIsCalendarVisible] = useState(false)
     const [validateDate, setValidateDate] = useState<DateRange | undefined>()
 
     const duplicateItem = () => {
         if (selectedItem) {
-            const copy = {
+            const copy: Konva.NodeConfig = {
                 ...selectedItem,
                 id: `${Date.now()}`,
             }
 
-            setStage((prevStages) => {
-                return prevStages.map((stage) => {
-                    if (stage.id === 1) {
-                        return {
-                            ...stage,
-                            copies: [...stage.copies, copy]
-                        }
-                    }
+            if (currentStage) {
 
-                    return stage
+                const updatedCopiesList = [...currentStage.copies, copy]
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return {
+                                ...stage,
+                                copies: updatedCopiesList
+                            }
+                        }
+                        return stage
+                    })
                 })
-            })
+
+                saveToHistory(currentStage.products, currentStage.shapes, currentStage.texts, updatedCopiesList)
+            }
+
         }
 
 
     }
 
+    const addShadowInItem = () => {
+        if (selectedItem) {
+            const itemType = (selectedItem as { type: string }).type
+
+            const shapeTypes = ["rectangle", "circle", "stamp", "rightArrow"];
+            const copyTypes = [
+                "copyProductImage", "copyRectangle", "copyCircle",
+                "copyStamp", "copyRightArrow", "copyText"
+            ];
+
+            const shadowConfig = {
+                shadowColor: 'black',
+                shadowOpacity: 1,
+                shadowBlur: 10,
+                shadowOffsetX: 1,
+                shadowOffsetY: 1,
+            }
+
+            const itemTypes = {
+                productImage: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    products: stage.products.map((product) => {
+                                        if (product.id = parseInt(selectedItem.id)) {
+                                            return {
+                                                ...product,
+                                                ...shadowConfig
+                                            }
+                                        }
+                                        return product
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                shapes: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    shapes: stage.shapes.map((shape) => {
+                                        if (shape.id === selectedItem.id) {
+                                            return {
+                                                ...shape,
+                                                ...shadowConfig
+                                            }
+                                        }
+                                        return shape
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                text: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    texts: stage.texts.map((text) => {
+                                        if (text.id === selectedItem.id) {
+                                            return {
+                                                ...text,
+                                                ...shadowConfig
+                                            }
+                                        }
+
+                                        return text
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                },
+                copy: () => {
+                    setStage((prevStages) => {
+                        return prevStages.map((stage) => {
+                            if (stage.id === 1) {
+                                return {
+                                    ...stage,
+                                    copies: stage.copies.map((copy) => {
+                                        if (copy.id === selectedItem.id) {
+                                            return {
+                                                ...copy,
+                                                ...shadowConfig
+                                            }
+                                        }
+
+                                        return copy
+                                    })
+                                }
+                            }
+
+                            return stage
+                        })
+                    })
+                }
+            }
+
+            if (shapeTypes.includes(itemType)) {
+                const itemTypeFunction = itemTypes["shapes"];
+                return itemTypeFunction();
+            }
+            if (copyTypes.includes(itemType)) {
+                const itemTypeFunction = itemTypes["copy"];
+                return itemTypeFunction();
+            }
+
+            const itemTypeFunction = itemTypes[itemType as keyof typeof itemTypes];
+            return itemTypeFunction();
+        }
+    }
+
 
     //fazer função para voltar e prosseguir no histórico
-
-    //fazer função para adicionar sombra ao elemento
 
     return (
         <section className="flex flex-col items-center justify-center gap-[5px]">
@@ -51,6 +184,7 @@ export function ActionsTools() {
                     className="w-1 h-8 rounded-2xl"
                     title="Duplique Algum Elemento"
                     disabled={!selectedItem}
+                    onClick={() => duplicateItem()}
                 >
                     <Copy />
                 </Button>
@@ -80,6 +214,7 @@ export function ActionsTools() {
                     className="w-1 h-8 rounded-2xl"
                     title="Adicionar Sombra ao Elemento"
                     disabled={!selectedItem}
+                    onClick={() => addShadowInItem()}
                 >
                     <Images />
                 </Button>

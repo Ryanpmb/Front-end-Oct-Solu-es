@@ -102,8 +102,7 @@ export function ProductItem({
                 {
                     isLoadingProductImage && <div className="w-10 h-10 border border-red rounded-full animate-spin" />
                 }
-                <img onLoad={() => setLoadingProductImage(false)} className="w-[100px]" src={img} alt="" />
-                <h3>{name}</h3>
+                <img onLoad={() => setLoadingProductImage(false)} className="w-[100px]" src={img} alt="" /> 
             </div>
             <div className="w-[70%] flex items-center gap-[10px]">
                 <div >
@@ -119,7 +118,6 @@ export function ProductItem({
                         {
                             (priceBoxtype === 'normal' || priceBoxtype === undefined) &&  (
                                 <Input
-                                    type="number"
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeProductPrice(parseFloat(e.target.value))}
                                     placeholder="R$00,00"
                                     className="w-[60%]"

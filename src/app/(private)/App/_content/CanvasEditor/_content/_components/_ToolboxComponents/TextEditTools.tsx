@@ -1,4 +1,5 @@
 import { KonvaNewTextInterface } from "@/app/Interfaces/TextInterface";
+import { HistoryStageContext } from "@/components/Context Apis/HistoryStage";
 import { StageContext } from "@/components/Context Apis/StageContext";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,7 +9,10 @@ import { useContext } from "react";
 
 export function TextEditTools() {
 
-    const { setStage } = useContext(StageContext);
+    const { saveToHistory } = useContext(HistoryStageContext);
+    const { setStage, stages } = useContext(StageContext);
+    const currentStage = stages.find((stage) => stage.id === 1);
+
 
     const fontSizeSelectOptions = [
         8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46
@@ -52,18 +56,24 @@ export function TextEditTools() {
             fontStyle: "normal"
         }
 
-        setStage((prevStage) => {
-            return prevStage.map((stage) => {
-                if (stage.id === 1) {
-                    return {
-                        ...stage,
-                        texts: [...stage.texts, newText]
-                    }
-                }
+        if (currentStage) {
 
-                return stage;
+            const updatedTextList = [...currentStage.texts, newText]
+            setStage((prevStage) => {
+                return prevStage.map((stage) => {
+                    if (stage.id === currentStage.id) {
+                        return {
+                            ...stage,
+                            texts: updatedTextList
+                        }
+                    }
+
+                    return stage;
+                })
             })
-        })
+
+            saveToHistory(currentStage.products, currentStage.shapes, updatedTextList, currentStage.copies)
+        }
     }
 
 
