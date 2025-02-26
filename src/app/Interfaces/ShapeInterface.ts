@@ -1,4 +1,3 @@
-import { Circle } from 'lucide-react';
 export interface KonvaNewShapeInterface {
     type: string,
     id: string,
@@ -18,6 +17,7 @@ export interface KonvaNewShapeInterface {
     fillLinearGradientStartPoint: { x: number, y: number },
     fillLinearGradientEndPoint: { x: number, y: number },
     data?: string,
+    
 }
 
 export interface ShapeTypesInterface {

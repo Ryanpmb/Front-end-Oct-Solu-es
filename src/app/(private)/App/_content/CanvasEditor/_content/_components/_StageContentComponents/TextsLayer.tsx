@@ -7,12 +7,14 @@ export function TextsLayer({
     text,
     selectItemFn,
     grabCursorWhenOnTopOfAnItemFn,
-    normalCursorWhenLeavingTheTopAnItemFn
+    normalCursorWhenLeavingTheTopAnItemFn,
+    transformEndToSaveToHistoryFn
 }: {
     text: KonvaNewTextInterface,
     selectItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
     grabCursorWhenOnTopOfAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
-    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
+    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
+    transformEndToSaveToHistoryFn: (type: string) => void,
 }) {
     return (
         <Text
@@ -27,6 +29,7 @@ export function TextsLayer({
             fontSize={16}
             x={text.x ? text.x + 100 : undefined}
             y={text.y ? text.y + 25 : undefined}
+            onTransformEnd={() => transformEndToSaveToHistoryFn("texts")}
         />
     )
 }

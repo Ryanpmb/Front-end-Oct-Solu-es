@@ -20,4 +20,6 @@ export interface ProductInterface {
     shadowBlur?: number,
     shadowOffsetX?: number,
     shadowOffsetY?: number,
+    imageScaleX: number,
+    imageScaleY: number,
 }

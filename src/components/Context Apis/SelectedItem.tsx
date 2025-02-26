@@ -1,5 +1,6 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 import Konva from 'konva';
+import { string } from "yup";
 
 interface SelectedItemContextType {
     selectedItem: Konva.NodeConfig | Konva.NodeConfig[] | null,

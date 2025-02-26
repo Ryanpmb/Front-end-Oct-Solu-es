@@ -9,19 +9,21 @@ export function CopyLayer({
     copy,
     selectItemFn,
     grabCursorWhenOnTopOfAnItemFn,
-    normalCursorWhenLeavingTheTopAnItemFn
+    normalCursorWhenLeavingTheTopAnItemFn,
+    transformEndToSaveToHistoryFn
 }: {
     copy: ProductInterface | KonvaNewShapeInterface | KonvaNewTextInterface | Konva.NodeConfig,
     selectItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
     grabCursorWhenOnTopOfAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
-    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void
+    normalCursorWhenLeavingTheTopAnItemFn: (e: Konva.KonvaEventObject<MouseEvent>) => void,
+    transformEndToSaveToHistoryFn: (type: string) => void,
 
 }) {
 
     return (
         <>
             {
-                ('image' in copy && copy.type === "productImage" ||'image' in copy && copy.type ===  "copyProductImage") && (
+                ('image' in copy && copy.type === "productImage" || 'image' in copy && copy.type === "copyProductImage") && (
                     <>
                         <Image
                             draggable
@@ -34,6 +36,7 @@ export function CopyLayer({
                             y={copy.y}
                             width={copy.width}
                             height={copy.height}
+                            onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                         />
                     </>
                 )
@@ -48,12 +51,13 @@ export function CopyLayer({
                         {...copy}
                         type="copyRectangle"
                         x={copy.x ? copy.x + 20 : 0}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                     />
                 )
             }
 
             {
-                ("type" in copy && copy.type === 'circle' || "type" in copy && copy.type === 'copyCircle' ) && (
+                ("type" in copy && copy.type === 'circle' || "type" in copy && copy.type === 'copyCircle') && (
                     <Circle
                         onClick={(e: Konva.KonvaEventObject<MouseEvent>) => { selectItemFn(e) }}
                         onMouseEnter={(e: Konva.KonvaEventObject<MouseEvent>) => grabCursorWhenOnTopOfAnItemFn(e)}
@@ -61,6 +65,7 @@ export function CopyLayer({
                         {...copy}
                         type="copyCircle"
                         x={copy.x ? copy.x + 20 : 0}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                     />
                 )
             }
@@ -77,6 +82,7 @@ export function CopyLayer({
                         numPoints={copy.numPoints ? copy.numPoints : 15}
                         innerRadius={copy.innerRadius ? copy.innerRadius : 45}
                         outerRadius={copy.outerRadius ? copy.outerRadius : 50}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                     />
                 )
             }
@@ -90,6 +96,7 @@ export function CopyLayer({
                         {...copy}
                         type="copyRightArrow"
                         x={copy.x ? copy.x + 20 : 0}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                     />
                 )
             }
@@ -103,6 +110,7 @@ export function CopyLayer({
                         {...copy}
                         type="copyText"
                         x={copy.x ? copy.x + 20 : 0}
+                        onTransformEnd={() => transformEndToSaveToHistoryFn("copies")}
                     />
                 )
             }
