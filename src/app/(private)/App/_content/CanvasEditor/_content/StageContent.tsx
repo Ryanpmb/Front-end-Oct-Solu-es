@@ -63,12 +63,7 @@ export function StageContent() {
         const newScaleX = (selectedItem as { scaleX: number })?.scaleX;
         const newScaleY = (selectedItem as { scaleY: number })?.scaleY;
 
-        const updatedItemScale = (
-            items: any[],
-            selectedItemId: string,
-            scaleX: number,
-            scaleY: number
-        ) => {
+        const updatedItemScale = (items: any[],selectedItemId: string,scaleX: number,scaleY: number) => {
             return items.map((item) => {
                 if (item.id === selectedItemId) {
                     return { ...item, scaleX, scaleY };
@@ -79,13 +74,7 @@ export function StageContent() {
 
         const itemTypes = {
             shapes: () => {
-                const updatedShapeScale = updatedItemScale(
-                    currentStage.shapes,
-                    selectedItemId,
-                    newScaleX,
-                    newScaleY
-                );
-
+                const updatedShapeScale = updatedItemScale(currentStage.shapes,selectedItemId,newScaleX,newScaleY);
                 setStage((prevStages) => {
                     return prevStages.map((stage) => {
                         if (stage.id === 1) {
@@ -123,13 +112,7 @@ export function StageContent() {
             },
 
             copies: () => {
-                const updatedCopiesScale = updatedItemScale(
-                    currentStage.copies,
-                    selectedItemId,
-                    newScaleX,
-                    newScaleY
-                );
-
+                const updatedCopiesScale = updatedItemScale(currentStage.copies,selectedItemId,newScaleX,newScaleY);
                 setStage((prevStages) => {
                     return prevStages.map((stage) => {
                         if (stage.id === 1) {
@@ -143,13 +126,7 @@ export function StageContent() {
             },
 
             texts: () => {
-                const updatedTextsScale = updatedItemScale(
-                    currentStage.texts,
-                    selectedItemId,
-                    newScaleX,
-                    newScaleY
-                );
-
+                const updatedTextsScale = updatedItemScale(currentStage.texts,selectedItemId,newScaleX,newScaleY);
                 setStage((prevStages) => {
                     return prevStages.map((stage) => {
                         if (stage.id === 1) {
