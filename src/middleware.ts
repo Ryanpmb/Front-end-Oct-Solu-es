@@ -11,7 +11,7 @@ const publicRoutes = [
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED = "/Login"
 
-export default function middlewate(request: NextRequest) {
+export default function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     const publicRoute = publicRoutes.find(route => route.path === path);
@@ -29,7 +29,7 @@ export default function middlewate(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
     }
 
-    if(authToken && publicRoute && publicRoute.whenAutenticated === "redirect") {
+    if (authToken && publicRoute && publicRoute.whenAutenticated === "redirect") {
         const redirectUrl = request.nextUrl.clone()
 
         redirectUrl.pathname = "/DashBoard"
@@ -37,38 +37,45 @@ export default function middlewate(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
     }
 
-    if(authToken && !publicRoute){
+    if (authToken && !publicRoute) {
         const token = request.cookies.get("access_token")
 
         const redirectUrl = request.nextUrl.clone()
 
         redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED;
 
-        if(token){
+        if (token) {
             const decode = jwtDecode(token.value)
             const currentTime = Math.floor(Date.now() / 1000)
 
-           
 
 
-            if(decode.exp){
 
-                if(decode.exp > currentTime){
+            if (decode.exp) {
+
+                if (decode.exp > currentTime) {
                     return NextResponse.next()
                 }
 
-                
-               request.cookies.delete("access_token")
-        
-                return NextResponse.redirect(redirectUrl)
-                
+
+                request.cookies.delete("access_token")
+                console.log("ta caindo aqui")
+
+                const response = NextResponse.redirect(redirectUrl);
+                response.headers.set(
+                    "Set-Cookie",
+                    `access_token=; Path=/; Max-Age=0`
+                );
+
+                return response;
+
             }
 
             return NextResponse.redirect(redirectUrl)
-          
+
 
         }
-        
+
 
     }
 
