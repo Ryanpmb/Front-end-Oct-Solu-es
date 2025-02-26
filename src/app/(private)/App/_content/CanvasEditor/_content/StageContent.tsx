@@ -57,127 +57,99 @@ export function StageContent() {
     }, [selectedItem])
 
     const transformEndToSaveToHistory = (type: string) => {
-        if (currentStage) {
-            const selectedItemId = (selectedItem as { id: string }).id
-            const itemTypes = {
-                shapes: () => {
+        if (!currentStage) return;
 
-                    const updatedShapeScale = currentStage.shapes.map((shape) => {
-                        if (shape.id === selectedItemId) {
-                            return {
-                                ...shape,
-                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
-                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
-                            }
+        const selectedItemId = (selectedItem as { id: string }).id;
+        const newScaleX = (selectedItem as { scaleX: number })?.scaleX;
+        const newScaleY = (selectedItem as { scaleY: number })?.scaleY;
+
+        const updatedItemScale = (items: any[],selectedItemId: string,scaleX: number,scaleY: number) => {
+            return items.map((item) => {
+                if (item.id === selectedItemId) {
+                    return { ...item, scaleX, scaleY };
+                }
+                return item;
+            });
+        };
+
+        const itemTypes = {
+            shapes: () => {
+                const updatedShapeScale = updatedItemScale(currentStage.shapes,selectedItemId,newScaleX,newScaleY);
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return { ...stage, shapes: updatedShapeScale };
                         }
-                        return shape
-                    })
+                        return stage;
+                    });
+                });
 
-                    setStage((prevStages) => {
-                        return prevStages.map((stage) => {
-                            if (stage.id === 1) {
-                                return {
-                                    ...stage,
-                                    shapes: updatedShapeScale
-                                }
-                            }
+                saveToHistory(currentStage.products, updatedShapeScale, currentStage.texts, currentStage.copies);
+            },
 
-                            return stage;
-                        })
-                    })
+            productsImage: () => {
+                const updatedProductScale = currentStage.products.map((product) => {
+                    if (product.id === parseInt(selectedItemId)) {
+                        return {
+                            ...product,
+                            imageScaleX: (selectedItem as { scaleX: number })?.scaleX,
+                            imageScaleY: (selectedItem as { scaleY: number })?.scaleY,
+                        };
+                    }
+                    return product;
+                });
 
-                    saveToHistory(currentStage.products, updatedShapeScale, currentStage.texts, currentStage.copies)
-                },
-                productsImage: () => {
-                    const updatedProductScale = currentStage.products.map((product) => {
-                        if (product.id === parseInt(selectedItemId)) {
-                            return {
-                                ...product,
-                                imageScaleX: (selectedItem as { scaleX: number })?.scaleX,
-                                imageScaleY: (selectedItem as { scaleY: number })?.scaleY,
-                            }
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return { ...stage, products: updatedProductScale };
                         }
-                        return product
-                    })
+                        return stage;
+                    });
+                });
 
-                    setStage((prevStages) => {
-                        return prevStages.map((stage) => {
-                            if (stage.id === 1) {
-                                return {
-                                    ...stage,
-                                    products: updatedProductScale
-                                };
-                            }
+                saveToHistory(updatedProductScale, currentStage.shapes, currentStage.texts, currentStage.copies);
+            },
 
-                            return stage;
-                        })
-                    })
-
-                    saveToHistory(updatedProductScale, currentStage.shapes, currentStage.texts, currentStage.copies)
-                },
-                copies: () => {
-                    const updatedCopiesScale = currentStage.copies.map((copy) => {
-                        if (copy.id === selectedItemId) {
-                            return {
-                                ...copy,
-                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
-                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
-                            }
+            copies: () => {
+                const updatedCopiesScale = updatedItemScale(currentStage.copies,selectedItemId,newScaleX,newScaleY);
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return { ...stage, copies: updatedCopiesScale };
                         }
-                        return copy
-                    })
+                        return stage;
+                    });
+                });
 
-                    setStage((prevStages) => {
-                        return prevStages.map((stage) => {
-                            if (stage.id === 1) {
-                                return {
-                                    ...stage,
-                                    copies: updatedCopiesScale
-                                };
-                            }
+                saveToHistory(currentStage.products, currentStage.shapes, currentStage.texts, updatedCopiesScale);
+            },
 
-                            return stage;
-                        })
-                    })
-
-                    saveToHistory(currentStage.products, currentStage.shapes, currentStage.texts, updatedCopiesScale)
-                },
-                texts: () => {
-                    const updatedTextsScale = currentStage.texts.map((text) => {
-                        if (text.id === selectedItemId) {
-                            return {
-                                ...text,
-                                scaleX: (selectedItem as { scaleX: number })?.scaleX,
-                                scaleY: (selectedItem as { scaleY: number })?.scaleY,
-                            }
+            texts: () => {
+                const updatedTextsScale = updatedItemScale(currentStage.texts,selectedItemId,newScaleX,newScaleY);
+                setStage((prevStages) => {
+                    return prevStages.map((stage) => {
+                        if (stage.id === 1) {
+                            return { ...stage, texts: updatedTextsScale };
                         }
-                        return text
-                    })
+                        return stage;
+                    });
+                });
 
-                    setStage((prevStages) => {
-                        return prevStages.map((stage) => {
-                            if (stage.id === 1) {
-                                return {
-                                    ...stage,
-                                    texts: updatedTextsScale
-                                };
-                            }
+                saveToHistory(currentStage.products, currentStage.shapes, updatedTextsScale, currentStage.copies);
+            },
+        };
 
-                            return stage;
-                        })
-                    })
-
-                    saveToHistory(currentStage.products, currentStage.shapes, updatedTextsScale, currentStage.copies)
-                },
-            }
-
-            const transformEndFn = itemTypes[type as keyof typeof itemTypes]
-            if (transformEndFn) {
-                transformEndFn()
-            }
-
+        const transformEndFn = itemTypes[type as keyof typeof itemTypes];
+        if (transformEndFn) {
+            transformEndFn();
         }
-    }
+    };
+
+    useEffect(() =>{
+        console.log(stages)
+    }, [stages])
+
 
 
     return (
