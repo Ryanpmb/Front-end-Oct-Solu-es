@@ -53,7 +53,7 @@ export function StageContent() {
                 }
 
             }
-        }, 1) //esse timeout só foi adicionado para o transformerRef não ser null para cair dentro do if
+        }, 1) //esse timeout só foi adicionado para o transformerRef não ser null para cair dentro do if 
     }, [selectedItem])
 
     const transformEndToSaveToHistory = (type: string) => {
